@@ -1,8 +1,14 @@
+#include <Servo.h>
+
 const int trigPin = 10; // Trigger Pin of Ultrasonic Sensor
 const int echoPin = 11; // Echo Pin of Ultrasonic Sensor
+Servo pointer;
+
 
 void setup() {
   // put your setup code here, to run once:
+  pointer.attach(12);
+  
   pinMode(trigPin, OUTPUT); //ultrasonic sensor setup
   pinMode(echoPin, INPUT);
 
@@ -23,9 +29,11 @@ void loop() {
   long duration,cm;
   // The sensor is triggered by a HIGH pulse of 10 or more microseconds.
   // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
-  digitalWrite(trigPin , HIGH);
-  delayMicroseconds(1000);
-  digitalWrite(trigPin , LOW);
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(5);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
 
   
   duration = pulseIn(echoPin , HIGH);
@@ -33,7 +41,8 @@ void loop() {
   
   int amount = lightUpAmount(cm);
   lightUp(amount);
-  
+  moveServo(cm);
+  delay(250);
 }
 
 long microsecondsToCentimeters(long microseconds) {
@@ -61,4 +70,9 @@ void lightUp(int amount){ //light up LEDs
       digitalWrite(i + 2, LOW);
      }
   }
+}
+
+void moveServo(int cm){
+  int angle = map(cm, 2, 15, 15, 100);
+  pointer.write(angle);
 }
