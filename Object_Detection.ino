@@ -1,9 +1,9 @@
-const int pingPin = 10; // Trigger Pin of Ultrasonic Sensor
+const int trigPin = 10; // Trigger Pin of Ultrasonic Sensor
 const int echoPin = 11; // Echo Pin of Ultrasonic Sensor
 
 void setup() {
   // put your setup code here, to run once:
-  pinMode(pingPin, OUTPUT); //ultrasonic sensor setup
+  pinMode(trigPin, OUTPUT); //ultrasonic sensor setup
   pinMode(echoPin, INPUT);
 
   //setup for led
@@ -23,20 +23,42 @@ void loop() {
   long duration,cm;
   // The sensor is triggered by a HIGH pulse of 10 or more microseconds.
   // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
-  digitalWrite(pingPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(pingPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(pingPin, LOW);
-  pinMode(echoPin, INPUT);
-  duration = pulseIn(echoPin, HIGH);
+  digitalWrite(trigPin , HIGH);
+  delayMicroseconds(1000);
+  digitalWrite(trigPin , LOW);
+
+  
+  duration = pulseIn(echoPin , HIGH);
   cm = microsecondsToCentimeters(duration);
-  Serial.print(cm);
-  Serial.print("cm");
-  Serial.println();
-  delay(100);
+  
+  int amount = lightUpAmount(cm);
+  lightUp(amount);
+  
 }
 
 long microsecondsToCentimeters(long microseconds) {
-   return microseconds / 29 / 2;
+   return (microseconds/2) / 29.1;
+}
+
+int lightUpAmount(int cm){ //determines how many LED to light up
+  if(cm < 5) return 8;
+  if(cm >= 5 && cm < 7) return 7;
+  if(cm >= 7 && cm < 10) return 6;
+  if(cm >= 10 && cm < 15) return 5;
+  if(cm >= 15 && cm < 17) return 4;
+  if(cm >= 17 && cm < 20) return 3;
+  if(cm >= 20 && cm < 25) return 2;
+  if(cm >= 25) return 1;
+}
+
+void lightUp(int amount){ //light up LEDs
+  Serial.println("lighting");
+  Serial.println(amount);
+  for(int i = 0; i < 8; i++){ //loop through all LEDs
+     if(i < amount){
+      digitalWrite(i + 2, HIGH);
+     }else{
+      digitalWrite(i + 2, LOW);
+     }
+  }
 }
